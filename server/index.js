@@ -4,6 +4,9 @@ import mongoose from "mongoose"
 import cookieParser from "cookie-parser"
 import authRoute from "./routes/authRoutes.js"
 import cors from "cors"
+import { Server } from "socket.io"
+import http from 'http'
+import userRoute from "./routes/userRoute.js"
 
 dotenv.config()
 
@@ -14,12 +17,32 @@ app.use(cors({
     credentials:true
 }))
 
+const server=http.createServer(app)
+
+const io=new Server(server,{
+    cors:{
+        origin:process.env.VITE_ENDPOINT,
+        methods:['GET','POST'],
+        credentials:true
+    }
+})
+
+io.on("connection",(socket)=>{
+    console.log("socket connected",socket.id)
+    // socket.on("disconnect",()=>{
+    //     console.log("socket disconnected",socket.id)
+    // })
+})
+
 app.use(express.json())
 app.use(cookieParser())
 
+app.use('/api/user',userRoute)
+
 app.use('/api/auth',authRoute)
 
-app.listen(process.env.PORT,()=>{console.log(`port running on ${process.env.PORT}`)})
+
+server.listen(process.env.PORT,()=>{console.log(`port running on ${process.env.PORT}`)})
 
 mongoose.connect(process.env.DATABASE_URL).then(()=>{
     console.log('databse connected successfully')

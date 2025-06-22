@@ -1,7 +1,23 @@
 import { axiosInstance } from "../src/utils/axios.js"
 
-export const login=async()=>{
 
+export const login=async(formData)=>{
+  const {email,password}=formData
+
+  try {
+    
+    const res=await axiosInstance.post('/auth/login',{email,password})
+
+    if(!res.data.success){
+      return {error:res.data.message}
+    }
+
+    return {success:true, message:"user logged in successfully", user:res.data.user}
+  } catch (error) {
+    console.log("error in verify api calling function",{error})
+    const message=error.response?.data?.message || "Something went wrong"
+    return {error:message}
+  }
 }
 
 export const signup = async (formData) => {
@@ -36,7 +52,9 @@ export const verify=async(code,userEmail)=>{
     if(!res.data.success){
       return {error: res.data.message}
     }
-    return {success:true, message:res.data.message}
+
+
+    return {success:true, message:res.data.message, user:res.data.user}
     
   } catch (error) {
     console.log("error in verify api calling function",{error})

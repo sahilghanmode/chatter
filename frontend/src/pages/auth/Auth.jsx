@@ -1,8 +1,10 @@
 import { Eye, EyeOff, Lock, Mail, MessageCircle, User } from "lucide-react"
 import { useState } from 'react'
-import { signup } from '../../../apis/authApi.js'
+import { login, signup } from '../../../apis/authApi.js'
 import {useNavigate} from "react-router-dom"
 import toast from "react-hot-toast"
+import { useDispatch } from "react-redux"
+import { setUser } from "../../../utils/userSlice.js"
 
 const Auth = () => {
 
@@ -16,6 +18,7 @@ const Auth = () => {
         confirmPassword:""
     })
     const [error,setError]=useState("")
+    const dipatch=useDispatch()
 
     const navigate=useNavigate()
 
@@ -30,15 +33,26 @@ const Auth = () => {
 
         try {
             if (isLogin) {
-            } else {
-            const signupRes = await signup(formData)
 
-            if (signupRes.success) {
-                toast.success(signupRes.message)
-                navigate(`/verify/${formData.email}`)
+                const loginRes=await login(formData)
+                if(loginRes.success){
+                    toast.success(loginRes.message)
+                    dipatch(setUser(loginRes.user))
+                    
+                    navigate('/chats')
+                }else{
+                    toast.error(loginRes.error || "Login failed. Please try again later.")
+                }
+
             } else {
-                toast.error(signupRes.error || "Signup failed. Please try again.");
-            }
+                const signupRes = await signup(formData)
+
+                if (signupRes.success) {
+                    toast.success(signupRes.message)
+                    navigate(`/verify/${formData.email}`)
+                } else {
+                    toast.error(signupRes.error || "Signup failed. Please try again.");
+                }
             }
         } catch (error) {
             console.error("Error during form submission:", error);

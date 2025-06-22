@@ -3,8 +3,11 @@ import {BrowserRouter, Routes,Route} from "react-router-dom"
 import Auth from './pages/auth/Auth'
 import Verify from './pages/verifyOtp/Verify'
 import ChatsMain from './pages/Chats/ChatsMain'
+import {io} from "socket.io-client"
 
 function App() {
+
+  const socket=io(import.meta.env.VITE_API_ENDPOINT)
 
   return (
     <BrowserRouter>

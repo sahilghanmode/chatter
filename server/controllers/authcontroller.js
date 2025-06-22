@@ -1,6 +1,7 @@
 import User from "../models/userModel.js"
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
+import { compare } from "bcrypt"
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -14,6 +15,16 @@ const maxAge = 30 * 24 * 60 * 60 * 1000
 
 const createToken = (email, userId) => {
     return jwt.sign({ email, userId }, process.env.JWT_SECRET, { expiresIn: maxAge })
+}
+
+export const getCurrentUser=async(req,res)=>{
+    try {
+        const user=req.user
+        return res.status(200).json(user)
+    } catch (error) {
+        console.log("error in get current user controller",{error})
+        return res.status(500).json({message:"Internal server error"})
+    }
 }
 
 export const signup=async(req,res)=>{
@@ -149,5 +160,43 @@ export const verify=async(req,res)=>{
     } catch (error) {
        console.log("error in verify controller",{error})
        return res.status(500).json({success:false, message:"Internal Server Error"}) 
+    }
+}
+
+export const login=async(req,res)=>{
+    try {
+
+        const {email, password}=req.body
+        if(!email || !password){
+            return res.status(400).json({success:false, message:"Email and password is required"})
+        }
+        const user=await User.findOne({email})
+        
+        if(!user){
+            return res.status(400).json({success:false, message:"email does not match"})
+        }
+
+        if(!user.isVerified){
+            return res.status(400).json({success:false, message:"User is not verified"})
+        }   
+
+        const auth =await compare(password, user.password)
+        if(!auth){
+            return res.status(400).json({success:false,message:"Password does not match"})
+        }
+
+        res.cookie("authToken",createToken(user.email, user.id),{
+            maxAge,
+            secure:true,
+            sameSite:"None"
+        })
+
+        return res.status(200).json({success:true, message:"user is logged in successfully", user})
+
+
+        
+    } catch (error) {
+        console.log("error in login controller",{error})
+        return res.status(500).json({success:false, message:"Something went wrong"})
     }
 }

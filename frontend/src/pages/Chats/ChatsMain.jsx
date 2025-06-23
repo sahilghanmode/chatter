@@ -1,25 +1,63 @@
+import { useEffect } from 'react'
 import SideBar from './SideBar/SideBar'
-
+import {useSelector} from "react-redux"
+import { selectUser } from '../../../utils/userSlice.js'
+import { useState } from 'react'
+import {axiosInstance} from "../../utils/axios.js"
+import ChatWindow from './ChatWindow/ChatWindow.jsx'
+ 
 
 const ChatsMain = () => {
+
+  const [conversations,setConversations]=useState([])
+  const [activeChat,setActiveChat]=useState(null)
+  const user=useSelector(selectUser)
+
+  useEffect(()=>{
+    const getUsersforSidebar=async()=>{
+      const userId=user._id
+      const res=await axiosInstance.get(`/user/getConversations/${userId}`)
+      if(res.data.success){
+        setConversations(res.data.conversations)
+      }
+    }
+
+    getUsersforSidebar()
+  },[user])
+
+  console.log(activeChat)
+
+  const handleChatSelect=(chatId)=>{
+    setActiveChat(chatId)
+
+    setConversations(prevChats => 
+      prevChats.map(chat => 
+        chat._id == chatId 
+          ? { ...chat, unreadCount: 0 }
+          : chat
+      )
+    );
+    
+  }
+
+
+
   return (
     <div className="h-screen bg-gradient-to-br from-[#FEFBFF] via-white to-[#F3E8FF] flex">
-      {/* <Sidebar
-        chats={chats}
-        activeChat={activeChat}
+
+      <SideBar
         onChatSelect={handleChatSelect}
-      /> */}
-      <SideBar/>
+        conversations={conversations}
+      />
 
       
       <div className="flex-1 flex flex-col">
-        {/* {activeChatData ? (
+        {activeChat ? (
           <ChatWindow
-            chat={activeChatData}
-            currentUserId={user.id}
-            onSendMessage={handleSendMessage}
+            chat={activeChat}
+            // onSendMessage={handleSendMessage}
           />
-        ) : ( */}
+        ) : ( 
           <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#FEFBFF] via-white to-[#F3E8FF] relative overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#F3E8FF]/30 to-[#EDE9FE]/20 rounded-full blur-3xl" />
@@ -88,7 +126,7 @@ const ChatsMain = () => {
               </div>
             </div>
           </div>
-        {/* )} */}
+        )}
       </div>
     </div>
   )

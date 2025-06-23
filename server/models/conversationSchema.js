@@ -19,7 +19,12 @@ const conversationSchema = new mongoose.Schema({
     type: Map,
     of: Number, 
     default: {}
-  }
+  },
+
+  messages: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Message" }
+  ]
+
 }, { timestamps: true });
 
 export default mongoose.model("Conversation", conversationSchema);

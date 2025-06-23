@@ -7,6 +7,7 @@ import cors from "cors"
 import { Server } from "socket.io"
 import http from 'http'
 import userRoute from "./routes/userRoute.js"
+import chatRoute from "./routes/chatRoute.js"
 
 dotenv.config()
 
@@ -40,6 +41,8 @@ app.use(cookieParser())
 app.use('/api/user',userRoute)
 
 app.use('/api/auth',authRoute)
+
+app.use('/api/chats',chatRoute)
 
 
 server.listen(process.env.PORT,()=>{console.log(`port running on ${process.env.PORT}`)})

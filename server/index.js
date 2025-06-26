@@ -8,6 +8,7 @@ import { Server } from "socket.io"
 import http from 'http'
 import userRoute from "./routes/userRoute.js"
 import chatRoute from "./routes/chatRoute.js"
+import { initSocket } from "./socket.js"
 
 dotenv.config()
 
@@ -20,20 +21,7 @@ app.use(cors({
 
 const server=http.createServer(app)
 
-const io=new Server(server,{
-    cors:{
-        origin:process.env.VITE_ENDPOINT,
-        methods:['GET','POST'],
-        credentials:true
-    }
-})
-
-io.on("connection",(socket)=>{
-    console.log("socket connected",socket.id)
-    // socket.on("disconnect",()=>{
-    //     console.log("socket disconnected",socket.id)
-    // })
-})
+initSocket(server)
 
 app.use(express.json())
 app.use(cookieParser())

@@ -8,7 +8,7 @@ import { selectUser } from '../../../../utils/userSlice.js'
 import Header from './Header.jsx'
 import MessageInput from './MessageInput.jsx'
 
-const ChatWindow = ({chat}) => {
+const ChatWindow = ({chat,socket}) => {
 
 
     const user=useSelector(selectUser)
@@ -24,18 +24,33 @@ const ChatWindow = ({chat}) => {
         getConversation()
     },[chat])
 
+    useEffect(()=>{
+
+      if(!socket)return 
+
+      const handleReceive=(message)=>{
+        setMessages((prev)=>[...prev,message])
+      }
+      
+      socket.on("receive-message",(message)=>{
+        handleReceive(message)
+      })
+    },[])
+    
+
+
     const onSendMessage=()=>{
-      console.log("object")
+      
     }
 
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-[#FEFBFF] via-white to-[#F8F4FF]">
-      <Header user={chat.user} />
+      <Header user={chat.user} socket={socket} />
       
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {messages.map((message, index) => {
-          const isOwn = message.sender._id === user._id;
+          const isOwn = message.sender === user._id;
         //   const showAvatar = !isOwn && (
         //     index === 0 || 
         //     chat.messages[index - 1].senderId !== message.senderId
@@ -64,7 +79,7 @@ const ChatWindow = ({chat}) => {
         {/* <div ref={messagesEndRef} /> */}
       </div>
 
-      <MessageInput onSendMessage={onSendMessage} /> 
+      <MessageInput onSendMessage={onSendMessage} socket={socket} selectedUser={chat} /> 
     </div>
   )
 }

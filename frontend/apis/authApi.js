@@ -20,6 +20,23 @@ export const login=async(formData)=>{
   }
 }
 
+export const logout=async()=>{
+  try {
+    const res=await axiosInstance.post('/auth/logout')
+    if(res.data.success){
+      return {success:true, message:res.data.message}
+    }
+
+    return {error:res.data.message}
+
+    
+  } catch (error) {
+    console.log("error in logout api calling function",{error})
+    const message = error.response?.data?.message || "Something went wrong. Please try again.";
+    return {error:message}
+  }
+}
+
 export const signup = async (formData) => {
   const { name, email, password } = formData;
 

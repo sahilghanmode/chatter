@@ -7,7 +7,7 @@ import {axiosInstance} from "../../utils/axios.js"
 import ChatWindow from './ChatWindow/ChatWindow.jsx'
  
 
-const ChatsMain = () => {
+const ChatsMain = ({socket}) => {
 
   const [conversations,setConversations]=useState([])
   const [activeChat,setActiveChat]=useState(null)
@@ -25,6 +25,12 @@ const ChatsMain = () => {
     getUsersforSidebar()
   },[user])
 
+  useEffect(() => {
+    if (user?._id && socket) {
+      socket.emit("usertomap", user._id);
+    }
+  }, [user, socket]);
+
   console.log(activeChat)
 
   const handleChatSelect=(chatId)=>{
@@ -40,14 +46,13 @@ const ChatsMain = () => {
     
   }
 
-
-
   return (
     <div className="h-screen bg-gradient-to-br from-[#FEFBFF] via-white to-[#F3E8FF] flex">
 
       <SideBar
         onChatSelect={handleChatSelect}
         conversations={conversations}
+        socket={socket}
       />
 
       
@@ -56,6 +61,8 @@ const ChatsMain = () => {
           <ChatWindow
             chat={activeChat}
             // onSendMessage={handleSendMessage}
+            socket={socket}
+
           />
         ) : ( 
           <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#FEFBFF] via-white to-[#F3E8FF] relative overflow-hidden">

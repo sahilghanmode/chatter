@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom"
 import toast from "react-hot-toast"
 import { useDispatch } from "react-redux"
 import { setUser } from "../../../utils/userSlice.js"
+import { socket } from "../../utils/socket.js"
 
 const Auth = () => {
 
@@ -38,6 +39,7 @@ const Auth = () => {
                 if(loginRes.success){
                     toast.success(loginRes.message)
                     dipatch(setUser(loginRes.user))
+                    socket.connect()
                     
                     navigate('/chats')
                 }else{

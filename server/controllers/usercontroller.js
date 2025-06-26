@@ -46,7 +46,7 @@ export const sendMessage=async(req,res)=>{
             });
         }
 
-        const newMessage=await Message({
+        const newMessage=await Message.create({
             sender:from,
             receiver:to,
             message,

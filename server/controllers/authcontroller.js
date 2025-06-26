@@ -200,3 +200,23 @@ export const login=async(req,res)=>{
         return res.status(500).json({success:false, message:"Something went wrong"})
     }
 }
+
+export const logout=async(req,res)=>{
+    try {
+        console.log("here")
+
+        const userId=req.user._id
+        const options={
+            secure:true,
+            sameSite:'None',
+            httpOnly:true,
+            path:"/"
+        }
+
+        return res.status(200).clearCookie("authToken",options).json({success:true, message:"user logged out successfully"})
+        
+    } catch (error) {
+        console.log("error in logout controller",{error})
+        return res.status(500).json({success:false, message:"Internal Server Error"})
+    }
+}

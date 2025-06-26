@@ -1,14 +1,28 @@
 import { Paperclip, Send, Smile } from 'lucide-react'
 import React from 'react'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { selectUser } from '../../../../utils/userSlice'
 
-const MessageInput = (onSendMessage,disabled=false) => {
+const MessageInput = ({onSendMessage,disabled=false,socket, selectedUser}) => {
+
+    const user=useSelector(selectUser)
 
     const [message,setMessage]=useState('')
 
-    const handleSubmit=()=>{
-
+    const handleSubmit=(e)=>{
+      e.preventDefault()
+      socket.emit("send-message",{
+        sender:user._id,
+        receiver:selectedUser.user._id,
+        content:message,
+        conversation:selectedUser._id,
+        timestamp: new Date().toISOString()
+      })
+      setMessage('')
     }
+
+    
 
   return (
     <div className="bg-gradient-to-r from-white via-[#FDF7FF] to-[#F8F4FF] border-t border-[#E8E0F5] px-4 py-3 backdrop-blur-sm">

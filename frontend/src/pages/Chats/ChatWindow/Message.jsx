@@ -1,7 +1,8 @@
 import React from 'react'
 
 const Message = ({message,isOwn}) => {
-    console.log(message.message)
+
+  console.log(message)
 
     const formatTime = (input, locale = 'en-IN') => {
         const date = new Date(input);
@@ -27,13 +28,13 @@ const Message = ({message,isOwn}) => {
           }`}
         >
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {message.message}
+            {message.content}
           </p>
           <div className={`flex items-center justify-end mt-2 space-x-1 ${
             isOwn ? 'text-white/80' : 'text-[#8B5CF6]'
           }`}>
             <span className="text-xs font-medium">
-              {formatTime(message.createdAt)}
+              {formatTime(message.timestamp)}
             </span>
             {/* {isOwn && (
               <div className="flex items-center">

@@ -1,8 +1,23 @@
 import { MoreVertical, Phone, Video } from 'lucide-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-const Header = ({user}) => {
-    console.log(user)
+const Header = ({user, socket}) => {
+
+  const [isOnline, setIsOnline]=useState(false)
+  useEffect(()=>{
+    const userId=user._id
+  
+    const handleOnline=(userId)=>{
+        console.log("woorking",userId)
+        setIsOnline(true)
+      
+    }
+    console.log(userId)
+    socket.on("user-online",(userId)=>{
+      handleOnline(userId)
+    })
+  },[])
+
   return (
     <div className='bg-gradient-to-r from-white via-[#FDF7FF] to-[#F8F4FF] border-b border-[#E8E0F5] px-4 py-3 shadow-sm backdrop-blur-sm'>
       <div className='flex item-center justify-between'>
@@ -15,15 +30,15 @@ const Header = ({user}) => {
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-lg"
                 />
                 <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white shadow-sm ${
-                  user.status === 'online' ? 'bg-[#7C3AED]' : 
-                  user.status === 'away' ? 'bg-[#F59E0B]' : 'bg-gray-400'
+                  isOnline == true ? 'bg-[#7C3AED]' : 
+                  isOnline == false ? 'bg-[#F59E0B]' : 'bg-gray-400'
                 }`} />
               </div>
               <div>
                 <h2 className="font-semibold text-gray-800">{user.name}</h2>
                 <p className="text-xs text-[#8B5CF6]">
-                  {user.status === 'online' ? 'Online' : 
-                   user.status === 'away' ? 'Away' : 
+                  {isOnline === true ? 'Online' : 
+                   isOnline === false ? 'Away' : 
                    user.lastSeen ? `Last seen ${user.lastSeen}` : 'Offline'}
                 </p>
               </div>

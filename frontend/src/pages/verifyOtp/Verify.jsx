@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { verify } from '../../../apis/authApi'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../../../utils/userSlice.js'
+import { socket } from '../../utils/socket.js'
 
 const Verify = () => {
     const { userEmail } = useParams()
@@ -103,6 +104,7 @@ const Verify = () => {
             if(verifyRes.success){
                 dispatch(setUser(verifyRes.user))
                 toast.success(verifyRes.message)
+                socket.connect()
                 navigate('/chats')
             }else{
                 toast.error(verifyRes.error)
